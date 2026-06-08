@@ -515,9 +515,9 @@
       document.getElementById('messages').innerHTML = '';
     });
 
-    // Cmd+Shift+R (Mac) or Ctrl+Shift+R (Windows) to reset
+    // Cmd+Shift+X (Mac) or Ctrl+Shift+X (Windows) to reset
     document.addEventListener('keydown', (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'R') {
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'X') {
         e.preventDefault();
         if (confirm('Clear all transmissions?')) {
           fetch('/reset', { method: 'POST' });
