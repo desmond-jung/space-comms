@@ -61,8 +61,12 @@ io.on('connection', (socket) => {
     io.emit('message', msg);
   });
 
-  socket.on('typing', (data) => {
-    socket.broadcast.emit('typing', data);
+  socket.on('live-keystroke', (data) => {
+    socket.broadcast.emit('live-keystroke', data);
+  });
+
+  socket.on('live-clear', (data) => {
+    socket.broadcast.emit('live-clear', data);
   });
 
   socket.on('disconnect', () => {

@@ -389,16 +389,54 @@
 
     // Handle new messages
     socket.on('message', (msg) => {
-      const isOther = msg.role !== myRole;
-      renderMessage(msg, isOther);
+      // Remove live preview if this is the finalized version
+      if (msg.role !== myRole && liveMessageDiv) {
+        liveMessageDiv.remove();
+        liveMessageDiv = null;
+        liveMessageEl = null;
+        liveCursor = null;
+      }
+      renderMessage(msg, false);
       scrollToBottom();
-      hideTypingIndicator();
     });
 
-    // Handle typing indicator
-    socket.on('typing', (data) => {
-      if (data.role !== myRole) {
-        showTypingIndicator(data.role);
+    // Handle live keystrokes from other party
+    let liveMessageEl = null;
+    let liveCursor = null;
+    let liveMessageDiv = null;
+
+    socket.on('live-keystroke', (data) => {
+      if (data.role === myRole) return;
+
+      if (!liveMessageDiv) {
+        const container = document.getElementById('messages');
+        liveMessageDiv = document.createElement('div');
+        liveMessageDiv.className = `message ${data.role}`;
+        liveMessageDiv.innerHTML = `
+          <div class="message-header">
+            <span class="message-role">${data.role}</span>
+            <span class="message-time">LIVE</span>
+          </div>
+          <div class="message-text"><span class="text-content"></span></div>
+        `;
+        container.appendChild(liveMessageDiv);
+        liveMessageEl = liveMessageDiv.querySelector('.text-content');
+        liveCursor = document.createElement('span');
+        liveCursor.className = 'cursor';
+        liveMessageEl.after(liveCursor);
+      }
+
+      liveMessageEl.textContent = data.text;
+      scrollToBottom();
+    });
+
+    socket.on('live-clear', (data) => {
+      if (data.role === myRole) return;
+      if (liveMessageDiv) {
+        liveMessageDiv.remove();
+        liveMessageDiv = null;
+        liveMessageEl = null;
+        liveCursor = null;
       }
     });
 
@@ -477,9 +515,9 @@
       document.getElementById('messages').innerHTML = '';
     });
 
-    // Ctrl+Shift+R to reset
+    // Cmd+Shift+R (Mac) or Ctrl+Shift+R (Windows) to reset
     document.addEventListener('keydown', (e) => {
-      if (e.ctrlKey && e.shiftKey && e.key === 'R') {
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'R') {
         e.preventDefault();
         if (confirm('Clear all transmissions?')) {
           fetch('/reset', { method: 'POST' });
@@ -496,12 +534,13 @@
           role: myRole,
           text: input.value.trim()
         });
+        socket.emit('live-clear', { role: myRole });
         input.value = '';
       }
     });
 
     input.addEventListener('input', () => {
-      socket.emit('typing', { role: myRole });
+      socket.emit('live-keystroke', { role: myRole, text: input.value });
     });
   </script>
 </body>
