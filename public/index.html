@@ -774,55 +774,20 @@
 
     // Handle new messages
     socket.on('message', (msg) => {
-      // Remove live preview if this is the finalized version
-      if (msg.role !== myRole && liveMessageDiv) {
-        liveMessageDiv.remove();
-        liveMessageDiv = null;
-        liveMessageEl = null;
-        liveCursor = null;
-      }
+      if (msg.role !== myRole) hideTypingIndicator();
       renderMessage(msg, false);
       scrollToBottom();
     });
 
-    // Handle live keystrokes from other party
-    let liveMessageEl = null;
-    let liveCursor = null;
-    let liveMessageDiv = null;
-
-    socket.on('live-keystroke', (data) => {
+    // Show "<role> is typing..." when the other party is composing
+    socket.on('typing', (data) => {
       if (data.role === myRole) return;
-
-      if (!liveMessageDiv) {
-        const container = document.getElementById('messages');
-        liveMessageDiv = document.createElement('div');
-        liveMessageDiv.className = `message ${data.role}`;
-        liveMessageDiv.innerHTML = `
-          <div class="message-header">
-            <span class="message-role">${data.role}</span>
-            <span class="message-time">LIVE</span>
-          </div>
-          <div class="message-text"><span class="text-content"></span></div>
-        `;
-        container.appendChild(liveMessageDiv);
-        liveMessageEl = liveMessageDiv.querySelector('.text-content');
-        liveCursor = document.createElement('span');
-        liveCursor.className = 'cursor';
-        liveMessageEl.after(liveCursor);
-      }
-
-      liveMessageEl.textContent = data.text;
-      scrollToBottom();
+      showTypingIndicator(data.role);
     });
 
-    socket.on('live-clear', (data) => {
+    socket.on('stop-typing', (data) => {
       if (data.role === myRole) return;
-      if (liveMessageDiv) {
-        liveMessageDiv.remove();
-        liveMessageDiv = null;
-        liveMessageEl = null;
-        liveCursor = null;
-      }
+      hideTypingIndicator();
     });
 
     function renderMessage(msg, typewriter) {
@@ -879,7 +844,7 @@
     function showTypingIndicator(role) {
       const indicator = document.getElementById('typingIndicator');
       const text = document.getElementById('typingText');
-      text.textContent = `${role.toUpperCase()} is composing...`;
+      text.textContent = `${role.toUpperCase()} is typing...`;
       indicator.classList.add('active');
 
       clearTimeout(typingTimeout);
@@ -925,13 +890,17 @@
           role: myRole,
           text: input.value.trim()
         });
-        socket.emit('live-clear', { role: myRole });
+        socket.emit('stop-typing', { role: myRole });
         input.value = '';
       }
     });
 
     input.addEventListener('input', () => {
-      socket.emit('live-keystroke', { role: myRole, text: input.value });
+      if (input.value.trim()) {
+        socket.emit('typing', { role: myRole });
+      } else {
+        socket.emit('stop-typing', { role: myRole });
+      }
     });
   </script>
 </body>
