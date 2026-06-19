@@ -24,12 +24,67 @@
     }
 
     body {
-      background: var(--bg-primary);
       color: #c0d0e0;
       font-family: 'JetBrains Mono', monospace;
       height: 100vh;
       overflow: hidden;
       position: relative;
+      /* Ship interior hull */
+      background:
+        linear-gradient(180deg, #1d2228 0%, #14181d 12%, #14181d 88%, #0e1116 100%),
+        var(--bg-primary);
+    }
+
+    /* Side bulkheads — structural frame flanking the viewport pane */
+    .hull-strut {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      width: calc((100% - 1200px) / 2 + 24px);
+      min-width: 24px;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg, #2a3038 0%, #20252b 40%, #15191e 100%);
+      border-right: 2px solid #0a0d11;
+      box-shadow: inset -6px 0 14px rgba(0,0,0,0.6), inset 2px 0 0 rgba(255,255,255,0.04);
+    }
+    .hull-strut.right {
+      left: auto;
+      right: 0;
+      background: linear-gradient(270deg, #2a3038 0%, #20252b 40%, #15191e 100%);
+      border-right: none;
+      border-left: 2px solid #0a0d11;
+      box-shadow: inset 6px 0 14px rgba(0,0,0,0.6), inset -2px 0 0 rgba(255,255,255,0.04);
+    }
+    .hull-strut.left { left: 0; }
+    /* riveted panel seams + warning stripe down each bulkhead */
+    .hull-strut::before {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 10px;
+      background: repeating-linear-gradient(180deg, #c9a227 0 14px, #1a1a1a 14px 28px);
+      opacity: 0.5;
+    }
+    .hull-strut.left::before  { right: 6px; }
+    .hull-strut.right::before { left: 6px; }
+    .hull-strut::after {
+      content: '';
+      position: absolute;
+      top: 8%; bottom: 8%;
+      width: 14px;
+      border-radius: 4px;
+      background:
+        radial-gradient(circle at 50% 4%, #3a424c 2px, transparent 2.6px) 0 0 / 14px 60px,
+        linear-gradient(90deg, #30363e, #20252b);
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.6);
+    }
+    .hull-strut.left::after  { left: 18px; }
+    .hull-strut.right::after { right: 18px; }
+
+    @media (max-width: 1240px) {
+      .hull-strut { width: 24px; }
     }
 
     /* Scanline effect */
@@ -67,9 +122,261 @@
       display: flex;
       flex-direction: column;
       height: 100vh;
-      padding: 20px;
+      padding: 22px 26px;
       max-width: 1200px;
       margin: 0 auto;
+      position: relative;
+      z-index: 1;
+      /* recessed viewport pane set into the hull wall */
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(0,255,204,0.03), transparent 60%),
+        linear-gradient(180deg, #0c1016, #090c11);
+      border-left: 2px solid #3a424c;
+      border-right: 2px solid #3a424c;
+      box-shadow:
+        inset 0 0 40px rgba(0,0,0,0.7),
+        -8px 0 18px rgba(0,0,0,0.5),
+        8px 0 18px rgba(0,0,0,0.5);
+    }
+
+    /* Top half: chat viewscreen */
+    .chat-deck {
+      display: flex;
+      flex-direction: column;
+      height: 56vh;
+      min-height: 0;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(0,255,204,0.04), transparent 70%),
+        var(--bg-primary);
+      padding: 14px;
+      box-shadow: inset 0 0 60px rgba(0,255,204,0.03), 0 0 30px rgba(0,0,0,0.5);
+      position: relative;
+    }
+
+    .architect-view .chat-deck {
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(255,107,53,0.04), transparent 70%),
+        var(--bg-primary);
+    }
+
+    /* Bottom half: USS Endeavor console */
+    .console-deck {
+      flex: 1;
+      min-height: 0;
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: 1.5fr 1.05fr 1.3fr;
+      gap: 14px;
+    }
+
+    .panel {
+      position: relative;
+      background: linear-gradient(160deg, #363b42 0%, #20242a 60%, #181b20 100%);
+      border: 1px solid #4a515b;
+      border-top-color: #5b636e;
+      border-radius: 6px;
+      padding: 11px 12px 18px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+
+    /* yellow LED strip along the bottom bezel */
+    .panel::after {
+      content: '';
+      position: absolute;
+      left: 16px; right: 16px; bottom: 6px;
+      height: 5px;
+      border-radius: 2px;
+      background: repeating-linear-gradient(90deg, #f5d020 0 5px, rgba(0,0,0,0.45) 5px 11px);
+      opacity: 0.85;
+    }
+
+    .panel-title {
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 9px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    /* Plain panels (reverted to original page style) */
+    .panel.plain {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 12px 14px;
+      box-shadow: none;
+    }
+    .panel.plain::after { content: none; }
+
+    /* Equalizer (SIGNAL FLUX) — static bars */
+    .equalizer {
+      flex: 1;
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+    }
+    .equalizer span {
+      flex: 1;
+      background: linear-gradient(to top, var(--captain-color), rgba(0,255,204,0.2));
+      border-radius: 2px 2px 0 0;
+    }
+    .equalizer span:nth-child(1)  { height: 55%; }
+    .equalizer span:nth-child(2)  { height: 70%; }
+    .equalizer span:nth-child(3)  { height: 45%; }
+    .equalizer span:nth-child(4)  { height: 80%; }
+    .equalizer span:nth-child(5)  { height: 60%; }
+    .equalizer span:nth-child(6)  { height: 50%; }
+    .equalizer span:nth-child(7)  { height: 75%; }
+    .equalizer span:nth-child(8)  { height: 40%; }
+    .equalizer span:nth-child(9)  { height: 65%; }
+    .equalizer span:nth-child(10) { height: 58%; }
+    .equalizer span:nth-child(11) { height: 72%; }
+    .equalizer span:nth-child(12) { height: 48%; }
+    .equalizer span:nth-child(13) { height: 68%; }
+    .equalizer span:nth-child(14) { height: 54%; }
+    .equalizer span:nth-child(15) { height: 78%; }
+    .equalizer span:nth-child(16) { height: 44%; }
+    .equalizer span:nth-child(17) { height: 62%; }
+    .equalizer span:nth-child(18) { height: 56%; }
+
+    /* Gauges (CORE SYSTEMS) */
+    .gauges {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 9px;
+    }
+    .gauge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 10px;
+      color: var(--text-dim);
+    }
+    .gauge label { width: 26px; letter-spacing: 1px; }
+    .gauge-bar {
+      flex: 1;
+      height: 8px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .gauge-bar i {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, var(--captain-color), rgba(0,255,204,0.4));
+    }
+
+    /* cyan glass screen inside a panel (TACTICAL SCAN) */
+    .screen {
+      flex: 1;
+      min-height: 0;
+      position: relative;
+      border: 1px solid #1d6475;
+      border-radius: 4px;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(40,200,230,0.18), transparent 70%),
+        linear-gradient(180deg, #0c2c37, #061319);
+      box-shadow: inset 0 0 26px rgba(0,210,240,0.12);
+      padding: 8px 10px;
+      overflow: hidden;
+    }
+
+    /* RIGHT: tactical HUD / radar with WARNING */
+    .hud {
+      display: grid;
+      grid-template-columns: 1fr 1.3fr;
+      gap: 8px;
+    }
+    .hud-left {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      justify-content: center;
+    }
+    .hud-readout {
+      height: 7px;
+      border-radius: 2px;
+      background: linear-gradient(90deg, #5fd6e8 var(--w,60%), #123039 var(--w,60%));
+      box-shadow: 0 0 5px rgba(95,214,232,0.3);
+    }
+    .radar {
+      position: relative;
+      align-self: center;
+      justify-self: center;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      max-height: 100%;
+      border-radius: 50%;
+      border: 1px solid rgba(95,214,232,0.4);
+      box-shadow: inset 0 0 18px rgba(95,214,232,0.15);
+      overflow: hidden;
+    }
+    .radar-ring {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      border: 1px solid rgba(95,214,232,0.22);
+      border-radius: 50%;
+    }
+    .radar-ring.r1 { width: 66%; height: 66%; }
+    .radar-ring.r2 { width: 33%; height: 33%; }
+    .radar-cross-h, .radar-cross-v {
+      position: absolute;
+      background: rgba(95,214,232,0.18);
+    }
+    .radar-cross-h { top: 50%; left: 0; width: 100%; height: 1px; }
+    .radar-cross-v { left: 50%; top: 0; height: 100%; width: 1px; }
+    .radar-sweep {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: conic-gradient(from 0deg, rgba(95,214,232,0.4), transparent 60deg);
+      animation: sweep 3.5s linear infinite;
+    }
+    @keyframes sweep { to { transform: rotate(360deg); } }
+    .radar-blip {
+      position: absolute;
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: #ff5e4d;
+      box-shadow: 0 0 7px #ff5e4d;
+      animation: blip 3.5s ease-in-out infinite;
+    }
+    .radar-blip.b1 { top: 30%; left: 62%; animation-delay: 0.6s; }
+    .radar-blip.b2 { top: 64%; left: 40%; animation-delay: 2.0s; }
+    @keyframes blip {
+      0%, 100% { opacity: 0; }
+      10%      { opacity: 1; }
+      60%      { opacity: 0.2; }
+    }
+    .warning {
+      position: absolute;
+      right: 8px; bottom: 8px;
+      font-size: 9px;
+      letter-spacing: 1px;
+      color: #ff5e4d;
+      border: 1px solid #ff5e4d;
+      padding: 2px 6px;
+      border-radius: 2px;
+      background: rgba(40,8,8,0.6);
+      animation: warnPulse 1.4s ease-in-out infinite;
+    }
+    @keyframes warnPulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(255,94,77,0.5); }
+      50%      { opacity: 0.45; box-shadow: none; }
+    }
+
+    @media (max-height: 700px) {
+      .chat-deck { height: 52vh; }
     }
 
     /* Header */
@@ -339,6 +646,8 @@
 </head>
 <body>
   <div class="ambient-glow"></div>
+  <div class="hull-strut left" aria-hidden="true"></div>
+  <div class="hull-strut right" aria-hidden="true"></div>
 
   <!-- Role selection screen -->
   <div class="role-select" id="roleSelect">
@@ -351,24 +660,80 @@
 
   <!-- Chat interface -->
   <div class="container" id="chatContainer" style="display:none;">
-    <div class="header">
-      <div class="header-title" id="headerTitle">COMMS TERMINAL</div>
-      <div class="header-status">
-        <span>CHANNEL OPEN</span> · <span class="online">ENCRYPTED</span>
-        <button class="reset-btn" id="resetBtn" title="Clear all transmissions (Cmd+\)">RESET</button>
+
+    <!-- TOP HALF: viewscreen / chat -->
+    <div class="chat-deck">
+      <div class="header">
+        <div class="header-title" id="headerTitle">COMMS TERMINAL</div>
+        <div class="header-status">
+          <span>CHANNEL OPEN</span> · <span class="online">ENCRYPTED</span>
+          <button class="reset-btn" id="resetBtn" title="Clear all transmissions (Cmd+\)">RESET</button>
+        </div>
+      </div>
+
+      <div class="messages" id="messages"></div>
+
+      <div class="typing-indicator" id="typingIndicator">
+        <span id="typingText"></span>
+      </div>
+
+      <div class="input-area">
+        <span class="input-prompt" id="inputPrompt">&gt;</span>
+        <input type="text" class="input-field" id="inputField" placeholder="Enter transmission..." autocomplete="off" />
+        <span class="send-hint">ENTER TO TRANSMIT</span>
       </div>
     </div>
 
-    <div class="messages" id="messages"></div>
+    <!-- BOTTOM HALF: USS Endeavor console -->
+    <div class="console-deck" aria-hidden="true">
 
-    <div class="typing-indicator" id="typingIndicator">
-      <span id="typingText"></span>
-    </div>
+      <!-- LEFT: signal flux -->
+      <div class="panel plain">
+        <div class="panel-title">SIGNAL FLUX</div>
+        <div class="equalizer">
+          <span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span>
+        </div>
+      </div>
 
-    <div class="input-area">
-      <span class="input-prompt" id="inputPrompt">&gt;</span>
-      <input type="text" class="input-field" id="inputField" placeholder="Enter transmission..." autocomplete="off" />
-      <span class="send-hint">ENTER TO TRANSMIT</span>
+      <!-- MIDDLE: core systems -->
+      <div class="panel plain">
+        <div class="panel-title">CORE SYSTEMS</div>
+        <div class="gauges">
+          <div class="gauge"><label>PWR</label><div class="gauge-bar"><i style="width:82%"></i></div></div>
+          <div class="gauge"><label>O₂</label><div class="gauge-bar"><i style="width:96%"></i></div></div>
+          <div class="gauge"><label>THR</label><div class="gauge-bar"><i style="width:64%"></i></div></div>
+          <div class="gauge"><label>HUL</label><div class="gauge-bar"><i style="width:91%"></i></div></div>
+          <div class="gauge"><label>NAV</label><div class="gauge-bar"><i style="width:73%"></i></div></div>
+        </div>
+      </div>
+
+      <!-- RIGHT: tactical HUD / radar -->
+      <div class="panel">
+        <div class="panel-title">TACTICAL SCAN</div>
+        <div class="screen hud">
+          <div class="hud-left">
+            <div class="hud-readout" style="--w:78%"></div>
+            <div class="hud-readout" style="--w:46%"></div>
+            <div class="hud-readout" style="--w:62%"></div>
+            <div class="hud-readout" style="--w:34%"></div>
+            <div class="hud-readout" style="--w:88%"></div>
+          </div>
+          <div class="radar">
+            <div class="radar-ring r1"></div>
+            <div class="radar-ring r2"></div>
+            <div class="radar-cross-h"></div>
+            <div class="radar-cross-v"></div>
+            <div class="radar-sweep"></div>
+            <div class="radar-blip b1"></div>
+            <div class="radar-blip b2"></div>
+          </div>
+          <div class="warning">WARNING !</div>
+        </div>
+      </div>
+
     </div>
   </div>
 
