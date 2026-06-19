@@ -99,6 +99,25 @@
       color: #00ff88;
     }
 
+    .reset-btn {
+      margin-left: 14px;
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .reset-btn:hover {
+      border-color: var(--architect-color);
+      color: var(--architect-color);
+    }
+
     /* Messages area */
     .messages {
       flex: 1;
@@ -336,6 +355,7 @@
       <div class="header-title" id="headerTitle">COMMS TERMINAL</div>
       <div class="header-status">
         <span>CHANNEL OPEN</span> · <span class="online">ENCRYPTED</span>
+        <button class="reset-btn" id="resetBtn" title="Clear all transmissions (Cmd+\)">RESET</button>
       </div>
     </div>
 
@@ -515,13 +535,19 @@
       document.getElementById('messages').innerHTML = '';
     });
 
+    function resetChat() {
+      if (confirm('Clear all transmissions?')) {
+        fetch('/reset', { method: 'POST' });
+      }
+    }
+
+    document.getElementById('resetBtn').addEventListener('click', resetChat);
+
     // Cmd+\ (Mac) or Ctrl+\ (Windows) to reset
     document.addEventListener('keydown', (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key === '\\') {
         e.preventDefault();
-        if (confirm('Clear all transmissions?')) {
-          fetch('/reset', { method: 'POST' });
-        }
+        resetChat();
       }
     });
 
