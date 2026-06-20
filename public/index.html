@@ -35,57 +35,8 @@
         var(--bg-primary);
     }
 
-    /* Side bulkheads — structural frame flanking the viewport pane */
-    .hull-strut {
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      width: calc((100% - 1200px) / 2 + 24px);
-      min-width: 24px;
-      z-index: 0;
-      pointer-events: none;
-      background:
-        linear-gradient(90deg, #2a3038 0%, #20252b 40%, #15191e 100%);
-      border-right: 2px solid #0a0d11;
-      box-shadow: inset -6px 0 14px rgba(0,0,0,0.6), inset 2px 0 0 rgba(255,255,255,0.04);
-    }
-    .hull-strut.right {
-      left: auto;
-      right: 0;
-      background: linear-gradient(270deg, #2a3038 0%, #20252b 40%, #15191e 100%);
-      border-right: none;
-      border-left: 2px solid #0a0d11;
-      box-shadow: inset 6px 0 14px rgba(0,0,0,0.6), inset -2px 0 0 rgba(255,255,255,0.04);
-    }
-    .hull-strut.left { left: 0; }
-    /* riveted panel seams + warning stripe down each bulkhead */
-    .hull-strut::before {
-      content: '';
-      position: absolute;
-      top: 0; bottom: 0;
-      width: 10px;
-      background: repeating-linear-gradient(180deg, #c9a227 0 14px, #1a1a1a 14px 28px);
-      opacity: 0.5;
-    }
-    .hull-strut.left::before  { right: 6px; }
-    .hull-strut.right::before { left: 6px; }
-    .hull-strut::after {
-      content: '';
-      position: absolute;
-      top: 8%; bottom: 8%;
-      width: 14px;
-      border-radius: 4px;
-      background:
-        radial-gradient(circle at 50% 4%, #3a424c 2px, transparent 2.6px) 0 0 / 14px 60px,
-        linear-gradient(90deg, #30363e, #20252b);
-      box-shadow: inset 0 0 6px rgba(0,0,0,0.6);
-    }
-    .hull-strut.left::after  { left: 18px; }
-    .hull-strut.right::after { right: 18px; }
-
-    @media (max-width: 1240px) {
-      .hull-strut { width: 24px; }
-    }
+    /* Side bulkheads removed — chat spans full width */
+    .hull-strut { display: none; }
 
     /* Scanline effect */
     body::after {
@@ -123,20 +74,13 @@
       flex-direction: column;
       height: 100vh;
       padding: 22px 26px;
-      max-width: 1200px;
+      width: 100%;
       margin: 0 auto;
       position: relative;
       z-index: 1;
-      /* recessed viewport pane set into the hull wall */
       background:
         radial-gradient(ellipse at 50% 0%, rgba(0,255,204,0.03), transparent 60%),
         linear-gradient(180deg, #0c1016, #090c11);
-      border-left: 2px solid #3a424c;
-      border-right: 2px solid #3a424c;
-      box-shadow:
-        inset 0 0 40px rgba(0,0,0,0.7),
-        -8px 0 18px rgba(0,0,0,0.5),
-        8px 0 18px rgba(0,0,0,0.5);
     }
 
     /* Top half: chat viewscreen */
@@ -479,7 +423,7 @@
     }
 
     .message-role {
-      font-size: 11px;
+      font-size: 18px;
       font-weight: 700;
       letter-spacing: 2px;
       text-transform: uppercase;
@@ -494,20 +438,20 @@
     }
 
     .message-time {
-      font-size: 10px;
+      font-size: 16px;
       color: var(--text-dim);
     }
 
     .message-text {
-      font-size: 16px;
-      line-height: 1.6;
+      font-size: 30px;
+      line-height: 1.5;
       font-weight: 300;
     }
 
     .message-text .cursor {
       display: inline-block;
-      width: 8px;
-      height: 18px;
+      width: 12px;
+      height: 30px;
       background: currentColor;
       margin-left: 2px;
       animation: blink 0.6s step-end infinite;
@@ -523,7 +467,7 @@
     .typing-indicator {
       padding-left: 20px;
       margin-bottom: 16px;
-      font-size: 14px;
+      font-size: 26px;
       color: var(--text-dim);
       opacity: 0;
       transition: opacity 0.3s;
@@ -544,7 +488,7 @@
     }
 
     .input-prompt {
-      font-size: 14px;
+      font-size: 24px;
       font-weight: 700;
       white-space: nowrap;
     }
@@ -564,7 +508,7 @@
       outline: none;
       color: #c0d0e0;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 16px;
+      font-size: 30px;
       font-weight: 300;
     }
 
